@@ -1,0 +1,35 @@
+.cell {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 2px solid black;
+
+    margin: 0;
+    padding: 0;
+}
+
+.row {
+    line-height: 1px;
+    margin: 0;
+    padding: 0;
+}
+
+.cell-0 {
+    background: white;
+}
+.cell-1{
+    background: red;
+}
+
+.cell-2 {
+    background: yellow;
+}
+.cell-3 {
+    background: green;
+}
+.cell-4{
+    background: blue;
+}
+.cell-5{
+    background: lightgray;
+}
