@@ -23,9 +23,9 @@ export default function ShapeOption({ shape }: Props) {
       onClick={() => doSelectShape(0, 0)}
     >
       {grid.map((row, rowN) => (
-        <div key={rowN}>
+        <div key={rowN} className={'preview-row'}>
           {row.map((cell, colN) => (
-            <span
+            <div
               key={colN}
               onClick={e => {
                 e.stopPropagation()
@@ -44,7 +44,7 @@ export default function ShapeOption({ shape }: Props) {
                       (grid[rowN]?.[colN - 1] ? Borders.Left : 0)
                 }
               />
-            </span>
+            </div>
           ))}
         </div>
       ))}

@@ -1,5 +1,4 @@
 .cell {
-    display: inline-block;
     width: 32px;
     height: 32px;
     border: 2px solid black;
@@ -12,6 +11,7 @@
     line-height: 1px;
     margin: 0;
     padding: 0;
+    display: flex;
 }
 
 .cell-0 {
@@ -32,7 +32,6 @@
 .cell-5{
     background: lightgray !important;
 }
-
-.cell-container {
-    display: inline-block;
+.preview-row {
+    display:flex;
 }

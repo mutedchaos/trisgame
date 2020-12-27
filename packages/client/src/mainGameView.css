@@ -1,0 +1,12 @@
+.main-game-view {
+    display: flex;
+}
+
+.shape-options .cell {
+    width: 24px;
+    height: 24px;
+}
+
+.shape-options {
+    flex-grow: 1
+}
