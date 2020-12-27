@@ -1,0 +1,19 @@
+.shape-set {
+    display: flex;
+    background: orange;
+    padding: 16px;
+    margin: 16px;
+}
+
+.shape-option {
+    background: white;
+    border: 2px solid black;
+    margin: 10px;
+    padding: 0;
+    line-height: 0.1px;
+    align-self: center;
+}
+
+.shape-option.selected {
+    border-color: orange;
+}

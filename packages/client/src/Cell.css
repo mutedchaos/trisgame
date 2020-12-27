@@ -15,21 +15,25 @@
 }
 
 .cell-0 {
-    background: white;
+    background: white !important;
 }
 .cell-1{
-    background: red;
+    background: purple !important;
 }
 
 .cell-2 {
-    background: yellow;
+    background: yellow !important;
 }
 .cell-3 {
-    background: green;
+    background: green !important;
 }
 .cell-4{
-    background: blue;
+    background: blue !important;
 }
 .cell-5{
-    background: lightgray;
+    background: lightgray !important;
+}
+
+.cell-container {
+    display: inline-block;
 }

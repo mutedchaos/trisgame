@@ -1,20 +1,12 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import produce from 'immer'
-import Shape from './Shape'
-export enum Cell {
-  EMPTY,
-  INVALID,
-  SEMIVALID,
-  VALID,
-  FILLED,
-  CENTER,
-}
+import { Cell, CellData, GameState } from '@tris/common'
+import { playerIdContext } from './PlayerIdContext'
+import { gameStateContext } from './GameStateContext'
+import { selectedShapeContext } from './selectedShapeContext'
+import { Simulate } from 'react-dom/test-utils'
 
-interface MyBoardType {
-  width: number
-  height: number
-  cells: Cell[]
-  fillColor?: string
+type MyBoardType = GameState['players'][number] & {
   hover(index: number): void
   click(index: number): void
 }
@@ -22,44 +14,49 @@ interface MyBoardType {
 export const myBoardContext = React.createContext<MyBoardType>(null as any)
 
 interface Props {
-  width: number
-  height: number
   children: ReactNode
-  shape: Shape
 }
-export function MyBoardProvider({ children, width, height, shape }: Props) {
-  const [savedCells, setSavedCells] = useState<Cell[]>([])
+export function MyBoardProvider({ children }: Props) {
   const [cells, setCells] = useState<Cell[]>([])
-  const [rotation, setRotation] = useState(0)
   const [hovered, setHovered] = useState(-1)
+  const playerId = useContext(playerIdContext)
+  const { players, width } = useContext(gameStateContext)
+  const { shape: selectedShape } = useContext(selectedShapeContext)
+  const playerInfo = players.find(p => p.id === playerId)
+  if (!playerInfo) throw new Error('Player info not found')
 
   useEffect(() => {
     setCells(
-      produce(savedCells, t => {
-        const offsets = shape.getOffsets(rotation, width)
-        const cells = offsets.map(i => t[hovered + i])
-        const valid = cells.every(c => c === Cell.EMPTY)
-        for (const offset of offsets) {
-          t[hovered + offset] = valid ? Cell.VALID : t[hovered + offset] === Cell.EMPTY ? Cell.SEMIVALID : Cell.INVALID
+      produce(playerInfo.cells, t => {
+        if (!playerInfo.awaitingTile) return t
+        const offsets = selectedShape?.getOffsets(width) ?? []
+        const adjustedOffsets = offsets.map(o => o + hovered)
+        console.log('o,', offsets)
+        const cells = adjustedOffsets.map(i => t[i])
+        const valid =
+          cells.every(c => c && (c.data === CellData.EMPTY || c.data === CellData.CENTER)) &&
+          !(adjustedOffsets.some(o => o % width === 0) && adjustedOffsets.some(o => o % width === width - 1))
+        for (const offset of adjustedOffsets) {
+          if (!t[offset]) continue
+          t[offset].data = valid
+            ? CellData.VALID
+            : t[offset].data === CellData.EMPTY
+            ? CellData.SEMIVALID
+            : CellData.INVALID
         }
       })
     )
-  }, [savedCells, hovered, shape, rotation, width])
+  }, [hovered, playerInfo.cells, selectedShape, width])
 
-  const handleClick = useCallback(() => {
-    setSavedCells(cells.map((c, i) => (c === Cell.VALID ? Cell.FILLED : savedCells[i])))
-    setRotation(old => old + 1)
-  }, [cells, savedCells])
+  const handleClick = useCallback(() => {}, [])
 
-  useEffect(() => {
-    setSavedCells(Array(width * height).fill(Cell.EMPTY))
-  }, [width, height])
-  const value = useMemo<MyBoardType>(() => ({ width, height, cells, hover: setHovered, click: handleClick }), [
-    width,
-    height,
+  const value = useMemo<MyBoardType>(() => ({ ...playerInfo, cells, hover: setHovered, click: handleClick }), [
+    playerInfo,
     cells,
     handleClick,
   ])
+
+  if (!value.cells.length) return null
 
   return <myBoardContext.Provider value={value}>{children}</myBoardContext.Provider>
 }

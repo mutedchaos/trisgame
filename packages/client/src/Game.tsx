@@ -1,20 +1,21 @@
 import { MyBoardProvider } from './MyBoardContext'
 import BoardView from './BoardView'
-import { useMemo } from 'react'
-import Shape from './Shape'
+import { GameStateProvider } from './GameStateContext'
+import { PlayerIdProvider } from './PlayerIdContext'
+import { SelectedShapeProvider } from './selectedShapeContext'
+import ShapeOptions from './ShapeOptions'
 
 export default function Game() {
-  const s = useMemo(
-    () =>
-      new Shape(`
-    xxx
-    x
-  `),
-    []
-  )
   return (
-    <MyBoardProvider width={11} height={11} shape={s}>
-      <BoardView />
-    </MyBoardProvider>
+    <PlayerIdProvider playerId={'a'}>
+      <SelectedShapeProvider>
+        <GameStateProvider>
+          <MyBoardProvider>
+            <BoardView />
+            <ShapeOptions />
+          </MyBoardProvider>
+        </GameStateProvider>
+      </SelectedShapeProvider>
+    </PlayerIdProvider>
   )
 }

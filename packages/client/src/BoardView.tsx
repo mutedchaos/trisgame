@@ -1,9 +1,9 @@
 import { useContext, useMemo } from 'react'
-import { myBoardContext } from './MyBoardContext'
 import Cell from './Cell'
+import { gameStateContext } from './GameStateContext'
 
 export default function BoardView() {
-  const { width, height } = useContext(myBoardContext)
+  const { width, height } = useContext(gameStateContext)
 
   const rows = useMemo(() => Array(height).fill(0), [height])
   const cols = useMemo(() => Array(width).fill(0), [width])
