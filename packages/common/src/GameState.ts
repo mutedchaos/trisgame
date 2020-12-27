@@ -21,6 +21,9 @@ export type Cell = {
 }
 
 export interface GameState {
+  id: string
+  v: number
+  code: string
   phase: GamePhase
   tileOptions: string[]
   width: number

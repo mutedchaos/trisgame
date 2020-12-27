@@ -1,28 +1,15 @@
-import { CellData, GamePhase, GameState } from '@tris/common'
-import React, { ReactNode, useState } from 'react'
+import { GameState } from '@tris/common'
+import React, { ReactNode, useContext, useEffect, useState } from 'react'
+import { socketContext } from './socketContext'
 
 export const gameStateContext = React.createContext<GameState>(null as any)
 
 export function GameStateProvider({ children }: { children: ReactNode }) {
-  const [gameState] = useState<GameState>({
-    width: 9,
-    height: 9,
-    phase: GamePhase.PlacingStartingTiles,
-    players: [
-      {
-        id: 'a',
-        name: 'Jobot',
-        cells: Array(81)
-          .fill('x')
-          .map(x => ({
-            data: CellData.EMPTY,
-          })),
-        gameOver: false,
-        initialTile: 'red\nxxx\nx',
-        awaitingTile: true,
-      },
-    ],
-    tileOptions: [],
-  })
+  const [gameState, setGameState] = useState<GameState | null>(null)
+  const { subscribe } = useContext(socketContext)
+  useEffect(() => {
+    subscribe(setGameState)
+  }, [subscribe])
+  if (!gameState) return null
   return <gameStateContext.Provider value={gameState}>{children}</gameStateContext.Provider>
 }

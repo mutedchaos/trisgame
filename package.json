@@ -9,10 +9,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/qs": "6.9.5",
+    "@types/uuid": "8.3.0",
     "lerna": "^3.22.1",
     "prettier": "2.2.1"
   },
   "dependencies": {
-    "immer": "8.0.0"
+    "immer": "8.0.0",
+    "qs": "6.9.4",
+    "uuid": "8.3.2"
   }
 }
