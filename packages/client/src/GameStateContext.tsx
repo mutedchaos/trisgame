@@ -11,6 +11,7 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
     players: [
       {
         id: 'a',
+        name: 'Jobot',
         cells: Array(81)
           .fill('x')
           .map(x => ({

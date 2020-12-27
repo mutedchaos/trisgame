@@ -27,6 +27,7 @@ export interface GameState {
   height: number
   players: Array<{
     id: string
+    name: string
     initialTile: string
     awaitingTile: boolean
     gameOver: boolean
