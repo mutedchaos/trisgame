@@ -1,4 +1,4 @@
-import { GamePhase, GameState } from '@tris/common'
+import { CellData, GamePhase, GameState, Shape } from '@tris/common'
 import { getMainTiles, getStartingTiles } from './tiles'
 import { persistGame } from './persistence'
 
@@ -17,4 +17,54 @@ export async function startGame(game: GameState) {
   game.tileOptions = []
   game.secrets = { remainingTiles: getMainTiles() }
   await persistGame(game)
+}
+
+export async function addShape(game: GameState, playerId: string, shape: string, index: number) {
+  const player = game.players.find(p => p.id === playerId)!
+  if (!player.awaitingTile) return
+  const shapeObj = getValidShape(player.personalTiles ?? game.tileOptions, shape)
+  if (!shapeObj) throw new Error('Shape not valid')
+  const offsets = shapeObj.getOffsets(game.width)
+  const indexes = offsets.map(o => o + index)
+  if (indexes.some(i => !player.cells[i])) return
+  if (indexes.some(i => player.cells[i].data !== CellData.EMPTY && player.cells[i].data !== CellData.CENTER)) return
+  if (game.phase === GamePhase.PlacingStartingTiles && !indexes.some(i => player.cells[i].data === CellData.CENTER))
+    return
+
+  // looks good
+  for (const i of indexes) {
+    player.cells[i] = { data: CellData.FILLED, color: shapeObj.color }
+  }
+  player.personalTiles = null
+  player.awaitingTile = false
+  await persistGame(game)
+
+  await checkForEndOfTurn(game)
+}
+
+async function checkForEndOfTurn(game: GameState) {
+  if (game.players.every(p => !p.awaitingTile)) {
+    await startNextTurn(game)
+  }
+}
+
+async function startNextTurn(game: GameState) {
+  game.phase = GamePhase.RegularGame
+  game.tileOptions = [game.secrets!.remainingTiles.shift()!, game.secrets!.remainingTiles.shift()!]
+  for (const player of game.players) {
+    if (!player.gameOver) {
+      player.awaitingTile = true
+    }
+  }
+  ++game.turn
+  await persistGame(game)
+}
+
+function getValidShape(tileOptions: string[], proposedTile: string): Shape | null {
+  for (const option of tileOptions) {
+    for (const shape of Shape.from(option)) {
+      if (shape.shapeString === proposedTile) return shape
+    }
+  }
+  return null
 }

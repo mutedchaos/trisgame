@@ -21,6 +21,7 @@ export async function createGame(playerName: string) {
 
   const game: GameState = {
     v: 0,
+    turn: 0,
     code,
     id: gameId,
     phase: GamePhase.WaitingForPlayers,

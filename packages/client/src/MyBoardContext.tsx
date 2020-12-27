@@ -1,9 +1,10 @@
 import React, { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import produce from 'immer'
-import { Cell, CellData, GameState } from '@tris/common'
+import { Cell, CellData, GamePhase, GameState, SocketMessage } from '@tris/common'
 import { playerIdContext } from './PlayerIdContext'
 import { gameStateContext } from './GameStateContext'
 import { selectedShapeContext } from './selectedShapeContext'
+import { socketContext } from './socketContext'
 
 type MyBoardType = GameState['players'][number] & {
   hover(index: number): void
@@ -19,11 +20,12 @@ export function MyBoardProvider({ children }: Props) {
   const [cells, setCells] = useState<Cell[]>([])
   const [hovered, setHovered] = useState(-1)
   const playerId = useContext(playerIdContext)
-  const { players, width } = useContext(gameStateContext)
+  const { players, width, phase } = useContext(gameStateContext)
   const { shape: selectedShape, offsetX, offsetY } = useContext(selectedShapeContext)
+  const { sendMessage } = useContext(socketContext)
   const playerInfo = players.find(p => p.id === playerId)
   if (!playerInfo) throw new Error('Player info not found')
-  const extraOffset = -(offsetY - 1) * width - offsetX + 1
+  const extraOffset = -offsetY * width - offsetX
 
   console.log(extraOffset)
   useEffect(() => {
@@ -35,7 +37,9 @@ export function MyBoardProvider({ children }: Props) {
         const cells = adjustedOffsets.map(i => t[i])
         const valid =
           cells.every(c => c && (c.data === CellData.EMPTY || c.data === CellData.CENTER)) &&
-          !(adjustedOffsets.some(o => o % width === 0) && adjustedOffsets.some(o => o % width === width - 1))
+          !(adjustedOffsets.some(o => o % width === 0) && adjustedOffsets.some(o => o % width === width - 1)) &&
+          (phase !== GamePhase.PlacingStartingTiles || cells.some(c => c?.data === CellData.CENTER))
+
         for (const offset of adjustedOffsets) {
           if (!t[offset]) continue
           t[offset].data = valid
@@ -46,9 +50,14 @@ export function MyBoardProvider({ children }: Props) {
         }
       })
     )
-  }, [extraOffset, hovered, playerInfo.awaitingTile, playerInfo.cells, selectedShape, width])
+  }, [extraOffset, hovered, phase, playerInfo.awaitingTile, playerInfo.cells, selectedShape, width])
 
-  const handleClick = useCallback(() => {}, [])
+  const handleClick = useCallback(() => {
+    const index = hovered + extraOffset
+    if (selectedShape) {
+      sendMessage(SocketMessage.ADD, { shape: selectedShape.shapeString, index })
+    }
+  }, [extraOffset, hovered, selectedShape, sendMessage])
 
   const value = useMemo<MyBoardType>(() => ({ ...playerInfo, cells, hover: setHovered, click: handleClick }), [
     playerInfo,

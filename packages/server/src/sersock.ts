@@ -1,19 +1,24 @@
 import { Socket } from 'socket.io'
-import { GameState, SocketMessage } from '@tris/common'
-import { startGame } from './gameLogic'
+import { SocketMessage } from '@tris/common'
+import { addShape, startGame } from './gameLogic'
 import { getGame } from './games'
 
 export function attachSocketListeners(socket: Socket) {
   socket.on(SocketMessage.START, async () => {
-    let game = await getSocketGame(socket)
+    const game = await getSocketGame(socket)
     if (!game) throw new Error('Game gone')
-    handleStart(game, getSocketPlayer(socket))
+    if (game.players[0].id !== getSocketPlayer(socket)) throw new Error('Not owner')
+    startGame(game)
   })
-}
 
-function handleStart(game: GameState, playerId: string) {
-  if (game.players[0].id !== playerId) throw new Error('Not owner')
-  startGame(game)
+  socket.on(SocketMessage.ADD, async arg => {
+    const game = await getSocketGame(socket)
+    if (!game) throw new Error('Game gone')
+    if (typeof arg !== 'object' || !arg || typeof arg.shape !== 'string' || typeof arg.index !== 'number') {
+      throw new Error('Invalid args')
+    }
+    addShape(game, getSocketPlayer(socket), arg.shape, arg.index)
+  })
 }
 
 function getSocketPlayer(socket: Socket): string {

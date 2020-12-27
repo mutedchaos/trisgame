@@ -1,6 +1,10 @@
 export default class Shape {
   private constructor(private shape: string, public color: string) {}
 
+  public get shapeString() {
+    return this.shape
+  }
+
   static from(str: string) {
     const variants = new Set<string>()
     const [color] = str.split('\n')
@@ -24,14 +28,13 @@ export default class Shape {
   getOffsets(width: number) {
     const data = this.shape
     const lines = data.split('\n')
-    const offset = Math.floor(lines.length / 2)
     return Array.from(getOffsetsImpl())
 
     function* getOffsetsImpl() {
       for (let col = 0; col < lines[0].length; ++col) {
         for (let row = 0; row < lines.length; ++row) {
           if (lines[row][col] !== ' ') {
-            yield (row - offset) * width + col - offset
+            yield row * width + col
           }
         }
       }
