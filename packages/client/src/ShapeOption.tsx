@@ -11,15 +11,29 @@ export default function ShapeOption({ shape }: Props) {
   const grid = useMemo(() => shape.getGrid(), [shape])
   const { shape: selected, selectShape } = useContext(selectedShapeContext)
 
-  const doSelectShape = useCallback(() => {
-    selectShape(shape)
-  }, [selectShape, shape])
+  const doSelectShape = useCallback(
+    (col: number, row: number) => {
+      selectShape(shape, col, row)
+    },
+    [selectShape, shape]
+  )
   return (
-    <div className={`shape-option ${selected && shape.equals(selected) && 'selected'}`} onClick={doSelectShape}>
-      {grid.map((row, i) => (
-        <div key={i}>
-          {row.map((cell, i) => (
-            <CellView key={i} type={cell ? CellData.FILLED : CellData.EMPTY} color={shape.color} />
+    <div
+      className={`shape-option ${selected && shape.equals(selected) && 'selected'}`}
+      onClick={() => doSelectShape(0, 0)}
+    >
+      {grid.map((row, rowN) => (
+        <div key={rowN}>
+          {row.map((cell, colN) => (
+            <span
+              key={colN}
+              onClick={e => {
+                e.stopPropagation()
+                doSelectShape(colN, rowN)
+              }}
+            >
+              <CellView type={cell ? CellData.FILLED : CellData.EMPTY} color={shape.color} />
+            </span>
           ))}
         </div>
       ))}

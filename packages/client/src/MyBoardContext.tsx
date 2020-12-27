@@ -4,7 +4,6 @@ import { Cell, CellData, GameState } from '@tris/common'
 import { playerIdContext } from './PlayerIdContext'
 import { gameStateContext } from './GameStateContext'
 import { selectedShapeContext } from './selectedShapeContext'
-import { Simulate } from 'react-dom/test-utils'
 
 type MyBoardType = GameState['players'][number] & {
   hover(index: number): void
@@ -21,17 +20,18 @@ export function MyBoardProvider({ children }: Props) {
   const [hovered, setHovered] = useState(-1)
   const playerId = useContext(playerIdContext)
   const { players, width } = useContext(gameStateContext)
-  const { shape: selectedShape } = useContext(selectedShapeContext)
+  const { shape: selectedShape, offsetX, offsetY } = useContext(selectedShapeContext)
   const playerInfo = players.find(p => p.id === playerId)
   if (!playerInfo) throw new Error('Player info not found')
+  const extraOffset = -(offsetY - 1) * width - offsetX + 1
 
+  console.log(extraOffset)
   useEffect(() => {
     setCells(
       produce(playerInfo.cells, t => {
         if (!playerInfo.awaitingTile) return t
         const offsets = selectedShape?.getOffsets(width) ?? []
-        const adjustedOffsets = offsets.map(o => o + hovered)
-        console.log('o,', offsets)
+        const adjustedOffsets = offsets.map(o => o + hovered + extraOffset)
         const cells = adjustedOffsets.map(i => t[i])
         const valid =
           cells.every(c => c && (c.data === CellData.EMPTY || c.data === CellData.CENTER)) &&
@@ -46,7 +46,7 @@ export function MyBoardProvider({ children }: Props) {
         }
       })
     )
-  }, [hovered, playerInfo.cells, selectedShape, width])
+  }, [extraOffset, hovered, playerInfo.awaitingTile, playerInfo.cells, selectedShape, width])
 
   const handleClick = useCallback(() => {}, [])
 
