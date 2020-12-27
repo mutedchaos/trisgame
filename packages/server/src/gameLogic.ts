@@ -1,4 +1,4 @@
-import { CellData, GamePhase, GameState, Shape } from '@tris/common'
+import { Borders, CellData, GamePhase, GameState, Shape } from '@tris/common'
 import { getMainTiles, getStartingTiles } from './tiles'
 import { persistGame } from './persistence'
 
@@ -32,8 +32,17 @@ export async function addShape(game: GameState, playerId: string, shape: string,
     return
 
   // looks good
+  const { width } = game
   for (const i of indexes) {
-    player.cells[i] = { data: CellData.FILLED, color: shapeObj.color }
+    player.cells[i] = {
+      data: CellData.FILLED,
+      color: shapeObj.color,
+      borders:
+        (indexes.includes(i - width) ? Borders.Top : 0) +
+        (indexes.includes(i + width) ? Borders.Bottom : 0) +
+        (indexes.includes(i + 1) ? Borders.Right : 0) +
+        (indexes.includes(i - 1) ? Borders.Left : 0),
+    }
   }
   player.personalTiles = null
   player.awaitingTile = false

@@ -1,4 +1,4 @@
-import { CellData, Shape } from '@tris/common'
+import { Borders, CellData, Shape } from '@tris/common'
 import CellView from './CellView'
 import { useCallback, useContext, useMemo } from 'react'
 import { selectedShapeContext } from './selectedShapeContext'
@@ -32,7 +32,18 @@ export default function ShapeOption({ shape }: Props) {
                 doSelectShape(colN, rowN)
               }}
             >
-              <CellView type={cell ? CellData.FILLED : CellData.EMPTY} color={shape.color} />
+              <CellView
+                type={cell ? CellData.FILLED : CellData.EMPTY}
+                color={shape.color}
+                borders={
+                  !cell
+                    ? undefined
+                    : (grid[rowN - 1]?.[colN] ? Borders.Top : 0) +
+                      (grid[rowN + 1]?.[colN] ? Borders.Bottom : 0) +
+                      (grid[rowN]?.[colN + 1] ? Borders.Right : 0) +
+                      (grid[rowN]?.[colN - 1] ? Borders.Left : 0)
+                }
+              />
             </span>
           ))}
         </div>

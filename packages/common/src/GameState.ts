@@ -15,9 +15,17 @@ export enum CellData {
   BONUS,
 }
 
+export enum Borders {
+  Top = 1,
+  Right = 2,
+  Bottom = 4,
+  Left = 8,
+}
+
 export type Cell = {
   data: CellData
   color?: string
+  borders?: number
 }
 
 export interface GameState {

@@ -17,7 +17,7 @@ export default function Cell({ index }: Props) {
 
   return (
     <div onMouseEnter={onHover} onClick={onClick} className={'cell-container'}>
-      <CellView type={value.data} color={value.color} />
+      <CellView type={value.data} color={value.color} borders={value.borders} />
     </div>
   )
 }

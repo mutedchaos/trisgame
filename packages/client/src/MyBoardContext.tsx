@@ -27,7 +27,6 @@ export function MyBoardProvider({ children }: Props) {
   if (!playerInfo) throw new Error('Player info not found')
   const extraOffset = -offsetY * width - offsetX
 
-  console.log(extraOffset)
   useEffect(() => {
     setCells(
       produce(playerInfo.cells, t => {
