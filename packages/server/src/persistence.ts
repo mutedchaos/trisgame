@@ -23,9 +23,10 @@ export function getGameIdByCode(code: string) {
 export async function persistGame(game: GameState) {
   ++game.v
   await redis.setex('tris-game-' + game.id, 60 * 60, JSON.stringify(game))
+  const { secrets, ...publicGame } = game
   getIOS()
     .in('game-' + game.id)
-    .emit('game-state', game)
+    .emit('game-state', publicGame)
 }
 
 export async function getPersistedGame(gameId: string): Promise<GameState | null> {

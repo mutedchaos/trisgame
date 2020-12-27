@@ -6,7 +6,7 @@ import { playerIdContext } from './PlayerIdContext'
 
 interface Ctx {
   subscribe(handler: (gameState: GameState) => void): () => void
-  sendMessage(msgType: SocketMessage, data: any): void
+  sendMessage(msgType: SocketMessage, data?: any): void
 }
 
 export const socketContext = React.createContext<Ctx>(null as any)

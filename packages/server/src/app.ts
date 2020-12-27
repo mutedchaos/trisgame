@@ -3,6 +3,7 @@ import ioServer, { Socket } from 'socket.io'
 import { setIOS } from './ios'
 import { createGame, getGame, joinGame } from './games'
 import { getPlayerGame, persistGame } from './persistence'
+import { attachSocketListeners } from './sersock'
 
 async function run() {
   const app = express()
@@ -43,6 +44,7 @@ async function run() {
       if (!game) throw new Error('Game not found')
       await socket.join('game-' + gameId)
       await persistGame(game)
+      attachSocketListeners(socket)
     } catch (err) {
       console.error(err.stack)
       socket.disconnect(true)

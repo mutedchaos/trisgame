@@ -36,4 +36,7 @@ export interface GameState {
     gameOver: boolean
     cells: Cell[]
   }>
+  secrets?: {
+    remainingTiles: string[]
+  }
 }
