@@ -55,7 +55,7 @@ export async function joinGame(playerName: string, gameId: string) {
     awaitingTile: false,
     gameOver: false,
     cells,
-    initialTile: 'white\nx',
+    personalTiles: [],
   })
   await persistPlayer(playerId, gameId)
   await persistGame(game)

@@ -31,7 +31,7 @@ export interface GameState {
   players: Array<{
     id: string
     name: string
-    initialTile: string
+    personalTiles: string[] | null
     awaitingTile: boolean
     gameOver: boolean
     cells: Cell[]

@@ -11,11 +11,9 @@ export default function ShapeOptions() {
 
   const relevantShapeSets = useMemo(() => {
     if (!myBoard.awaitingTile) return []
-    if (gameState.phase === GamePhase.PlacingStartingTiles) {
-      return [Shape.from(myBoard.initialTile)]
-    }
-    return gameState.tileOptions.map(option => Shape.from(option))
-  }, [gameState.phase, gameState.tileOptions, myBoard.awaitingTile, myBoard.initialTile])
+
+    return (myBoard.personalTiles || gameState.tileOptions).map(option => Shape.from(option))
+  }, [gameState.tileOptions, myBoard.awaitingTile, myBoard.personalTiles])
   return (
     <div>
       {relevantShapeSets.map((set, i) => (
