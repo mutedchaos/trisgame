@@ -1,7 +1,7 @@
 import React, { useContext, useMemo } from 'react'
 import { gameStateContext } from './GameStateContext'
 import { myBoardContext } from './MyBoardContext'
-import { GamePhase, Shape } from '@tris/common'
+import { Shape } from '@tris/common'
 import ShapeOption from './ShapeOption'
 import './Shapes.css'
 
