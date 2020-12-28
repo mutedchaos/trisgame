@@ -9,6 +9,7 @@ export default class Shape {
     const variants = new Set<string>()
     const [color] = str.split('\n')
     const mainShape = normalizeShape(str)
+
     for (const mirror of [0, 1, 2]) {
       for (const rotate of [0, 1, 2, 3]) {
         let s = mainShape
@@ -18,7 +19,6 @@ export default class Shape {
         }
         if (mirror === 1) s = doMirror(s)
         if (mirror === 2) s = doMirror2(s)
-
         variants.add(s)
       }
     }
@@ -80,11 +80,17 @@ function doMirror2(s: string) {
 
 function doRotate(s: string) {
   const lines = s.split('\n')
-  const newLines = Array(lines[0].length).fill('')
-  for (let i = 0; i < lines[0].length; ++i) {
-    for (let c = 0; c < lines.length; ++c) {
-      newLines[i] += lines[c][i]
-    }
-  }
-  return newLines.join('\n')
+  const newLines = Array(lines[0].length)
+    .fill('')
+    .map(() => Array<string>(lines.length).fill('x'))
+
+  return newLines
+    .map((row, rowN) =>
+      row
+        .map((_, colN) => {
+          return lines[colN][lines[0].length - rowN - 1]
+        })
+        .join('')
+    )
+    .join('\n')
 }
