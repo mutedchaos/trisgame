@@ -140,5 +140,6 @@ function getValidShape(tileOptions: string[], proposedTile: string): Shape | nul
 }
 
 export function restartGame(game: GameState) {
+  ++game.turn
   return startGame(game)
 }
