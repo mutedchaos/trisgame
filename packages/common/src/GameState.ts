@@ -37,7 +37,11 @@ export interface GameState {
   tileOptions: string[]
   width: number
   height: number
+  bonusPointsAllocated: boolean
   players: Array<{
+    overallScore: number
+    roundsWon: number
+    previousRoundScore: number
     id: string
     name: string
     personalTiles: string[] | null

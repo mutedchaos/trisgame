@@ -22,6 +22,7 @@ export async function createGame(playerName: string) {
   const game: GameState = {
     v: 0,
     turn: 0,
+    bonusPointsAllocated: false,
     code,
     id: gameId,
     phase: GamePhase.WaitingForPlayers,
@@ -57,6 +58,9 @@ export async function joinGame(playerName: string, gameId: string) {
     gameOver: false,
     cells,
     personalTiles: [],
+    overallScore: 0,
+    roundsWon: 0,
+    previousRoundScore: 0,
   })
   await persistPlayer(playerId, gameId)
   await persistGame(game)

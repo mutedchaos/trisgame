@@ -24,3 +24,8 @@ export function getStartingTiles() {
 export function getMainTiles() {
   return shuffle(defaultTileset.main)
 }
+
+export function withFallbackTile(tile?: string) {
+  if (tile) return tile
+  return 'black\n xx \nxxxx\nxxxx\n xx '
+}

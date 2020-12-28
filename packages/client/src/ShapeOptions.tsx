@@ -1,14 +1,20 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useCallback, useContext, useMemo } from 'react'
 import { gameStateContext } from './GameStateContext'
 import { myBoardContext } from './MyBoardContext'
-import { Shape } from '@tris/common'
+import { Shape, SocketMessage } from '@tris/common'
 import ShapeOption from './ShapeOption'
 import './Shapes.css'
 import flatten from 'lodash/flatten'
+import { socketContext } from './socketContext'
 
 export default function ShapeOptions() {
   const gameState = useContext(gameStateContext)
   const myBoard = useContext(myBoardContext)
+  const { sendMessage } = useContext(socketContext)
+
+  const giveUp = useCallback(() => {
+    sendMessage(SocketMessage.GIVE_UP)
+  }, [sendMessage])
 
   const relevantShapeSets = useMemo(() => {
     if (!myBoard.awaitingTile) return []
@@ -20,6 +26,7 @@ export default function ShapeOptions() {
       {relevantShapeSets.map((shape, i) => (
         <ShapeOption key={i} shape={shape} />
       ))}
+      <button onClick={giveUp}>Give up</button>
     </div>
   )
 }

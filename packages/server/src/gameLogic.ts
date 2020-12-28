@@ -1,5 +1,5 @@
 import { Borders, CellData, GamePhase, GameState, Shape } from '@tris/common'
-import { getMainTiles, getStartingTiles } from './tiles'
+import { getMainTiles, getStartingTiles, withFallbackTile } from './tiles'
 import { persistGame } from './persistence'
 
 export async function startGame(game: GameState) {
@@ -8,11 +8,13 @@ export async function startGame(game: GameState) {
   }
   const startingTiles = getStartingTiles()
   game.phase = GamePhase.PlacingStartingTiles
+  game.bonusPointsAllocated = false
 
   for (const player of game.players) {
     player.awaitingTile = true
-    player.personalTiles = [startingTiles.shift()!]
+    player.personalTiles = [withFallbackTile(startingTiles.shift())]
     player.gameOver = false
+    player.previousRoundScore = 0
   }
   game.tileOptions = []
   game.secrets = { remainingTiles: getMainTiles() }
@@ -52,14 +54,26 @@ export async function addShape(game: GameState, playerId: string, shape: string,
 }
 
 async function checkForEndOfTurn(game: GameState) {
+  if (game.phase !== GamePhase.RegularGame && game.phase !== GamePhase.PlacingStartingTiles) return
+
   if (game.players.every(p => !p.awaitingTile)) {
     await startNextTurn(game)
   }
 }
 
 async function startNextTurn(game: GameState) {
+  if (game.players.some(p => p.gameOver) && !game.bonusPointsAllocated && game.players.length > 1) {
+    game.bonusPointsAllocated = true
+    for (const player of game.players.filter(p => p.gameOver)) {
+      const tile = player.cells.find(c => c.data === CellData.EMPTY)
+      if (tile) {
+        tile.data = CellData.BONUS
+      }
+    }
+    await persistGame(game)
+  }
   game.phase = GamePhase.RegularGame
-  game.tileOptions = [game.secrets!.remainingTiles.shift()!, game.secrets!.remainingTiles.shift()!]
+  game.tileOptions = [withFallbackTile(game.secrets!.remainingTiles.shift()), game.secrets!.remainingTiles.shift()!]
   for (const player of game.players) {
     if (!player.gameOver) {
       player.awaitingTile = true
@@ -67,6 +81,42 @@ async function startNextTurn(game: GameState) {
   }
   ++game.turn
   await persistGame(game)
+}
+
+export async function giveUp(game: GameState, playerId: string) {
+  // TODO: check if permitted
+  if (game.phase !== GamePhase.RegularGame) return
+  const player = game.players.find(p => p.id === playerId)!
+
+  if (player.gameOver) return
+  if (player.personalTiles) {
+    player.gameOver = true
+  } else {
+    player.personalTiles = [withFallbackTile(game.secrets!.remainingTiles.shift())]
+  }
+
+  await persistGame(game)
+  await checkGameOver(game)
+  await checkForEndOfTurn(game)
+}
+
+async function checkGameOver(game: GameState) {
+  if (game.players.every(g => g.gameOver)) {
+    for (const player of game.players) {
+      player.previousRoundScore = player.cells.filter(c => c.data === CellData.EMPTY).length
+      player.overallScore += player.previousRoundScore
+    }
+    const maxScore = Math.max(...game.players.map(p => p.previousRoundScore))
+    for (const player of game.players) {
+      if (player.previousRoundScore === maxScore) {
+        player.roundsWon++
+      }
+    }
+
+    game.phase = GamePhase.GameOver
+
+    await persistGame(game)
+  }
 }
 
 function getValidShape(tileOptions: string[], proposedTile: string): Shape | null {

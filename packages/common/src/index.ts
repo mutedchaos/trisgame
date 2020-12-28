@@ -6,4 +6,5 @@ export enum SocketMessage {
   START = 'START',
   ADD = 'ADD',
   RESTART = 'RESTART',
+  GIVE_UP = 'GIVE_UP',
 }
