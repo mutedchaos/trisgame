@@ -38,6 +38,12 @@ export async function createGame(playerName: string) {
   return await joinGame(playerName, gameId)
 }
 
+export async function joinGameByCode(playerName: string, code: string) {
+  const gameId = await getGameIdByCode(code)
+  if (!gameId) throw new Error('Invalid code')
+  return joinGame(playerName, gameId)
+}
+
 export async function joinGame(playerName: string, gameId: string) {
   const playerId = uuid()
 

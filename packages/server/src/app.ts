@@ -1,7 +1,7 @@
 import express from 'express'
 import ioServer, { Socket } from 'socket.io'
 import { setIOS } from './ios'
-import { createGame, getGame, joinGame } from './games'
+import { createGame, getGame, joinGameByCode } from './games'
 import { getPlayerGame, persistGame } from './persistence'
 import { attachSocketListeners } from './sersock'
 
@@ -25,7 +25,7 @@ async function run() {
       const code = req.query.code
       if (!name || typeof name !== 'string') throw new Error('No name')
       if (!code || typeof code !== 'string') throw new Error('No code')
-      const id = await joinGame(name, code)
+      const id = await joinGameByCode(name, code)
       res.send({ id })
     } catch (err) {
       res.send(err.message)

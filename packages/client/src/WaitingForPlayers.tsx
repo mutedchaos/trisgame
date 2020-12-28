@@ -15,6 +15,9 @@ export default function WaitingForPlayers() {
   return (
     <div>
       <h1>Getting ready to start the game</h1>
+      <p>
+        To let someone join, pass them the code <strong>{gameState.code}</strong>
+      </p>
       <h2>Players in the game:</h2>
       <ul>
         {gameState.players.map((player, i) => (
