@@ -29,3 +29,10 @@ xxxx
 --
 xxx
   xxx
+--
+xxxx
+x  x
+--
+x
+xxxx
+   x

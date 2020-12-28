@@ -19,3 +19,14 @@ x
 --
 xxx
 x x
+--
+xx
+ x
+ xx
+--
+xxx
+ x
+ x
+--
+xxxx
+x
