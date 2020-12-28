@@ -6,6 +6,8 @@ import WelcomeView from './WelcomeView'
 
 import qs from 'qs'
 import GameView from './GameView'
+import React from 'react'
+import { MyPlayerProvider } from './MyPlayerContext'
 
 export default function Game() {
   const playerId = qs.parse(document.location.search.slice(1)).id as string | undefined
@@ -14,7 +16,9 @@ export default function Game() {
       <SocketProvider fallback={<WelcomeView />}>
         <SelectedShapeProvider>
           <GameStateProvider>
-            <GameView />
+            <MyPlayerProvider>
+              <GameView />
+            </MyPlayerProvider>
           </GameStateProvider>
         </SelectedShapeProvider>
       </SocketProvider>

@@ -5,6 +5,8 @@ import './mainGameView.css'
 import React, { useCallback, useContext } from 'react'
 import { SocketMessage } from '@tris/common'
 import { socketContext } from './socketContext'
+import { myPlayerContext } from './MyPlayerContext'
+import OtherPlayersView from './OtherPlayersView'
 
 export default function MainGameView() {
   const { sendMessage } = useContext(socketContext)
@@ -13,13 +15,18 @@ export default function MainGameView() {
     sendMessage(SocketMessage.GIVE_UP)
   }, [sendMessage])
 
+  const { gameOver } = useContext(myPlayerContext)
+
   return (
-    <MyBoardProvider>
-      <div className={'main-game-view'}>
-        <BoardView />
-        <ShapeOptions />
-        <button onClick={giveUp}>Give up</button>
-      </div>
-    </MyBoardProvider>
+    <div>
+      <MyBoardProvider>
+        <div className={`main-game-view ${gameOver && 'disabled'}`}>
+          <BoardView />
+          <ShapeOptions />
+          {!gameOver && <button onClick={giveUp}>Give up</button>}
+        </div>
+      </MyBoardProvider>
+      <OtherPlayersView />
+    </div>
   )
 }

@@ -30,7 +30,7 @@ export function MyBoardProvider({ children }: Props) {
   useEffect(() => {
     setCells(
       produce(playerInfo.cells, t => {
-        if (!playerInfo.awaitingTile) return t
+        if (!playerInfo.awaitingTile || playerInfo.gameOver) return t
         const offsets = selectedShape?.getOffsets(width) ?? []
         const adjustedOffsets = offsets.map(o => o + hovered + extraOffset)
         const cells = adjustedOffsets.map(i => t[i])
@@ -49,7 +49,16 @@ export function MyBoardProvider({ children }: Props) {
         }
       })
     )
-  }, [extraOffset, hovered, phase, playerInfo.awaitingTile, playerInfo.cells, selectedShape, width])
+  }, [
+    extraOffset,
+    hovered,
+    phase,
+    playerInfo.awaitingTile,
+    playerInfo.cells,
+    playerInfo.gameOver,
+    selectedShape,
+    width,
+  ])
 
   const handleClick = useCallback(() => {
     const index = hovered + extraOffset
@@ -64,7 +73,7 @@ export function MyBoardProvider({ children }: Props) {
     handleClick,
   ])
 
-  if (!value.cells.length) return null
+  if (!cells.length) return null
 
   return <myBoardContext.Provider value={value}>{children}</myBoardContext.Provider>
 }

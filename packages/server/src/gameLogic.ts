@@ -101,6 +101,7 @@ export async function giveUp(game: GameState, playerId: string) {
   if (player.gameOver) return
   if (player.personalTiles) {
     player.gameOver = true
+    player.awaitingTile = false
   } else {
     player.personalTiles = [withFallbackTile(game.secrets!.remainingTiles.shift())]
   }

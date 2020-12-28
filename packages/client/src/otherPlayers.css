@@ -1,0 +1,7 @@
+.other-players {
+    display: flex;
+    background: lightblue;
+    padding: 16px;
+    justify-content: space-evenly;
+    margin: 16px;
+}

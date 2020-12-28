@@ -11,12 +11,14 @@ export default function ShapeOptions() {
   const myBoard = useContext(myBoardContext)
 
   const relevantShapeSets = useMemo(() => {
-    if (!myBoard.awaitingTile) return []
+    if (!myBoard.awaitingTile || myBoard.gameOver) return []
 
     return flatten((myBoard.personalTiles || gameState.tileOptions).map(option => Shape.from(option)))
-  }, [gameState.tileOptions, myBoard.awaitingTile, myBoard.personalTiles])
+  }, [gameState.tileOptions, myBoard.awaitingTile, myBoard.gameOver, myBoard.personalTiles])
+
   return (
     <div className={'shape-options'}>
+      {myBoard.gameOver && <h2>Game over.</h2>}
       {relevantShapeSets.map((shape, i) => (
         <ShapeOption key={i} shape={shape} />
       ))}

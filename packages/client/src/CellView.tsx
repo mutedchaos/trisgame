@@ -1,5 +1,6 @@
 import './Cell.css'
 import { Borders, CellData } from '@tris/common'
+import { useCellScale } from './CellScale'
 
 interface Props {
   type: CellData
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function CellView({ type, color, borders }: Props) {
+  const scale = useCellScale()
   const styles: any = { background: color }
 
   if (typeof borders === 'number') {
@@ -26,5 +28,8 @@ export default function CellView({ type, color, borders }: Props) {
       styles.borderTopColor = 'transparent'
     }
   }
+
+  styles.width = styles.height = 32 * scale
+
   return <div className={`cell cell-${type}`} style={styles} />
 }
