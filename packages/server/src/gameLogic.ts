@@ -58,6 +58,7 @@ export async function addShape(game: GameState, playerId: string, shape: string,
   await persistGame(game)
 
   await checkForEndOfTurn(game)
+  return true
 }
 
 async function checkForEndOfTurn(game: GameState) {
@@ -98,11 +99,12 @@ export async function giveUp(game: GameState, playerId: string) {
   if (game.phase !== GamePhase.RegularGame) return
   const player = game.players.find(p => p.id === playerId)!
 
-  if (player.gameOver) return
+  if (player.gameOver || !player.awaitingTile) return
   if (player.personalTiles) {
     player.gameOver = true
     player.awaitingTile = false
   } else {
+    if (await bruteForceShape(game, player)) return
     player.personalTiles = [withFallbackTile(game.secrets!.remainingTiles.shift())]
   }
 
@@ -142,4 +144,17 @@ function getValidShape(tileOptions: string[], proposedTile: string): Shape | nul
 export function restartGame(game: GameState) {
   ++game.turn
   return startGame(game)
+}
+
+async function bruteForceShape(game: GameState, player: GameState['players'][number]) {
+  const shapeSets = game.tileOptions.map(t => Shape.from(t))
+  const maxIndex = game.width * game.height - 1
+  for (const set of shapeSets) {
+    for (const shape of set) {
+      for (let i = 0; i <= maxIndex; ++i) {
+        if (await addShape(game, player.id, shape.shapeString, i)) return true
+      }
+    }
+  }
+  return false
 }
