@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid'
-import { CellData, GamePhase, GameState } from '@tris/common'
+import { GamePhase, GameState } from '@tris/common'
 import { getGameIdByCode, getPersistedGame, persistCode, persistGame, persistPlayer } from './persistence'
 
 const games = new Map<string, GameState>()
@@ -44,19 +44,13 @@ export async function joinGame(playerName: string, gameId: string) {
   const game = await getGame(gameId)
 
   if (game?.phase !== GamePhase.WaitingForPlayers) throw new Error('Game does not accept players any more')
-  const cells = Array(game.width * game.height)
-    .fill('')
-    .map(() => ({
-      data: CellData.EMPTY,
-    }))
-  cells[Math.floor(cells.length / 2)].data = CellData.CENTER
 
   game.players.push({
     id: playerId,
     name: playerName,
     awaitingTile: false,
     gameOver: false,
-    cells,
+    cells: [],
     personalTiles: [],
     overallScore: 0,
     roundsWon: 0,

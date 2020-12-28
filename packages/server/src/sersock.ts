@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io'
 import { SocketMessage } from '@tris/common'
-import { addShape, giveUp, startGame } from './gameLogic'
+import { addShape, giveUp, restartGame, startGame } from './gameLogic'
 import { getGame } from './games'
 
 export function attachSocketListeners(socket: Socket) {
@@ -25,6 +25,13 @@ export function attachSocketListeners(socket: Socket) {
     if (!game) throw new Error('Game gone')
 
     giveUp(game, getSocketPlayer(socket))
+  })
+
+  socket.on(SocketMessage.RESTART, async () => {
+    const game = await getSocketGame(socket)
+    if (!game) throw new Error('Game gone')
+
+    restartGame(game)
   })
 }
 

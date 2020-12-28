@@ -15,6 +15,13 @@ export async function startGame(game: GameState) {
     player.personalTiles = [withFallbackTile(startingTiles.shift())]
     player.gameOver = false
     player.previousRoundScore = 0
+    const cells = Array(game.width * game.height)
+      .fill('')
+      .map(() => ({
+        data: CellData.EMPTY,
+      }))
+    cells[Math.floor(cells.length / 2)].data = CellData.CENTER
+    player.cells = cells
   }
   game.tileOptions = []
   game.secrets = { remainingTiles: getMainTiles() }
@@ -129,4 +136,8 @@ function getValidShape(tileOptions: string[], proposedTile: string): Shape | nul
     }
   }
   return null
+}
+
+export function restartGame(game: GameState) {
+  return startGame(game)
 }
