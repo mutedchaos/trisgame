@@ -19,6 +19,7 @@ export default function ShapeOptions() {
   return (
     <div className={'shape-options'}>
       {myBoard.gameOver && <h2>Game over.</h2>}
+      {!myBoard.gameOver && !myBoard.awaitingTile && <h2>Waiting for other players</h2>}
       {relevantShapeSets.map((shape, i) => (
         <ShapeOption key={i} shape={shape} />
       ))}
