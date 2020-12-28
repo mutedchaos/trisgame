@@ -18,6 +18,8 @@
     "url": "/Users/tapani.haka/Dropbox/projects/tris"
   },
   "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "start": "node lib/app",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "dev": "ts-node-dev src/app"
   },

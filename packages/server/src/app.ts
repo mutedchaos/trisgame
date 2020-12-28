@@ -9,6 +9,8 @@ async function run() {
   const app = express()
   const server = app.listen(3001)
 
+  app.use(express.static('/app/public'))
+
   app.post('/game', async (req, res) => {
     try {
       const name = req.query.name

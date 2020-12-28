@@ -8,7 +8,7 @@ const defaultTileset = {
 }
 
 function loadTiles(set: string) {
-  const data = fs.readFileSync(__dirname + '/tiles/' + set + '.txt', 'utf-8')
+  const data = fs.readFileSync(__dirname + '/../tiles/' + set + '.txt', 'utf-8')
   const lines = data.split('\n')
   const color = lines[0]
   const dataSegments = lines.slice(1).join('\n').split('--')
