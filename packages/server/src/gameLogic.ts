@@ -39,7 +39,7 @@ export async function addShape(game: GameState, playerId: string, shape: string,
   if (indexes.some(i => player.cells[i].data !== CellData.EMPTY && player.cells[i].data !== CellData.CENTER)) return
   if (game.phase === GamePhase.PlacingStartingTiles && !indexes.some(i => player.cells[i].data === CellData.CENTER))
     return
-
+  if (indexes.some(i => i % game.width === 0) && indexes.some(i => i % game.width === game.width - 1)) return
   // looks good
   const { width } = game
   for (const i of indexes) {
