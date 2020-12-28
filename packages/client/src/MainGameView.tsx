@@ -15,7 +15,7 @@ export default function MainGameView() {
     sendMessage(SocketMessage.GIVE_UP)
   }, [sendMessage])
 
-  const { gameOver } = useContext(myPlayerContext)
+  const { gameOver, awaitingTile } = useContext(myPlayerContext)
 
   return (
     <div>
@@ -23,7 +23,11 @@ export default function MainGameView() {
         <div className={`main-game-view ${gameOver && 'disabled'}`}>
           <BoardView />
           <ShapeOptions />
-          {!gameOver && <button onClick={giveUp}>Give up</button>}
+          {!gameOver && (
+            <button disabled={!awaitingTile} onClick={giveUp}>
+              Give up
+            </button>
+          )}
         </div>
       </MyBoardProvider>
       <OtherPlayersView />
