@@ -73,7 +73,10 @@ async function startNextTurn(game: GameState) {
     await persistGame(game)
   }
   game.phase = GamePhase.RegularGame
-  game.tileOptions = [withFallbackTile(game.secrets!.remainingTiles.shift()), game.secrets!.remainingTiles.shift()!]
+  game.tileOptions = [
+    withFallbackTile(game.secrets!.remainingTiles.shift()),
+    withFallbackTile(game.secrets!.remainingTiles.shift()),
+  ]
   for (const player of game.players) {
     if (!player.gameOver) {
       player.awaitingTile = true
