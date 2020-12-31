@@ -9,16 +9,16 @@ export default class Shape {
     const variants = new Set<string>()
     const [color] = str.split('\n')
     const mainShape = normalizeShape(str)
-
-    for (const mirror of [0, 1, 2]) {
-      for (const rotate of [0, 1, 2, 3]) {
+    for (const rotate of [0, 1, 2, 3]) {
+      for (const mirror of [0, 1, 2, 3]) {
         let s = mainShape
         let r = rotate
         while (r--) {
           s = doRotate(s)
         }
-        if (mirror === 1) s = doMirror(s)
-        if (mirror === 2) s = doMirror2(s)
+        if (mirror === 1 || mirror === 3) s = doMirror2(s)
+        if (mirror === 2 || mirror === 3) s = doMirror(s)
+
         variants.add(s)
       }
     }
