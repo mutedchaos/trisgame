@@ -16,11 +16,16 @@ export default function ShapeOptions() {
     return flatten((myBoard.personalTiles || gameState.tileOptions).map(option => Shape.from(option)))
   }, [gameState.tileOptions, myBoard.awaitingTile, myBoard.gameOver, myBoard.personalTiles])
 
+  const sortedShapeSets = useMemo(
+    () => relevantShapeSets.sort((a, b) => a.getOffsets(10).length - b.getOffsets(10).length),
+    [relevantShapeSets]
+  )
+
   return (
     <div className={'shape-options'}>
       {myBoard.gameOver && <h2>Game over.</h2>}
       {!myBoard.gameOver && !myBoard.awaitingTile && <h2>Waiting for other players</h2>}
-      {relevantShapeSets.map((shape, i) => (
+      {sortedShapeSets.map((shape, i) => (
         <ShapeOption key={i} shape={shape} />
       ))}
     </div>
