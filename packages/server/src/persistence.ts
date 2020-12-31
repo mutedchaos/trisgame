@@ -1,8 +1,9 @@
 import Redis from 'ioredis'
 import { GameState } from '@tris/common'
 import { getIOS } from './ios'
+import MockRedis from './MockRedis'
 
-const redis = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379')
+const redis = process.env.REDIS_URL === 'none' ? new MockRedis() : new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379')
 
 export function persistCode(code: string, gameId: string) {
   return redis.setex('tris-code-' + code, 60 * 60, gameId)
