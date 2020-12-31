@@ -13,9 +13,10 @@ export default function ShapeOption({ shape }: Props) {
 
   const doSelectShape = useCallback(
     (col: number, row: number) => {
-      selectShape(shape, col, row)
+      const { col: finalCol, row: finalRow } = findClosestFilled(grid, col, row)
+      selectShape(shape, finalCol, finalRow)
     },
-    [selectShape, shape]
+    [grid, selectShape, shape]
   )
   return (
     <div
@@ -50,4 +51,26 @@ export default function ShapeOption({ shape }: Props) {
       ))}
     </div>
   )
+}
+
+function findClosestFilled(grid: boolean[][], col: number, row: number) {
+  const coeffs = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ]
+  if (grid[row][col]) return { col, row }
+  for (let distanceA = 1; true; ++distanceA) {
+    for (let distanceB = 0; distanceB <= distanceA; ++distanceB) {
+      for (const coeff of coeffs) {
+        const testCol = col + distanceA * coeff[0] + distanceB * coeff[1]
+        const testRow = row + distanceA * coeff[1] + distanceB * coeff[0]
+        if (testCol < 0 || testRow < 0 || testRow >= grid.length || testCol >= grid[row].length) continue
+        if (grid[testRow][testCol]) {
+          return { row: testRow, col: testCol }
+        }
+      }
+    }
+  }
 }
