@@ -32,15 +32,13 @@ COPY --from=common /app/packages/common /app/packages/common/
 
 FROM server-dev AS server-cleanup
 RUN cd packages/server && npm run build
-RUN cd packages/server && npm prune --production
-
-FROM root-deps AS root-cleanup
 RUN npm prune --production
+
 
 FROM $BASE as app
 WORKDIR /app
-COPY --from=root-cleanup /app/package*.json ./
-COPY --from=root-cleanup /app/node_modules ./node_modules/
+COPY --from=server-cleanup /app/package*.json ./
+COPY --from=server-cleanup /app/node_modules ./node_modules/
 COPY --from=server-cleanup /app/packages ./packages/
 COPY --from=client /app/packages/client/build /app/public
 WORKDIR /app/packages/server
