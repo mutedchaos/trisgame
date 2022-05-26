@@ -1,4 +1,4 @@
-ARG BASE=node:14-alpine
+ARG BASE=node:16.15.0-alpine
 FROM $BASE AS root-deps
 WORKDIR /app
 COPY package*.json ./
