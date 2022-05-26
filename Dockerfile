@@ -3,11 +3,11 @@ FROM $BASE AS root-deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
-COPY lerna.json ./
 
 FROM root-deps AS common-deps
 COPY packages/common/package*.json packages/common/
-RUN npx lerna bootstrap
+RUN echo '{}' > packages/common/tsconfig.json && mkdir packages/common/src && echo '' > packages/common/src/index.ts
+RUN cd packages/common && npm i --ignore-scripts
 
 FROM common-deps AS common
 COPY packages/common packages/common/
@@ -15,11 +15,11 @@ RUN cd packages/common && npm run build
 
 FROM common-deps as server-deps
 COPY packages/server/package*.json packages/server/
-RUN npx lerna bootstrap
+RUN npm i
 
 FROM common-deps as client-deps
 COPY packages/client/package*.json packages/client/
-RUN npx lerna bootstrap
+RUN npm i
 
 FROM client-deps AS client
 COPY packages/client packages/client/
@@ -33,7 +33,6 @@ COPY --from=common /app/packages/common /app/packages/common/
 FROM server-dev AS server-cleanup
 RUN cd packages/server && npm run build
 RUN cd packages/server && npm prune --production
-RUN npx lerna link
 
 FROM root-deps AS root-cleanup
 RUN npm prune --production
